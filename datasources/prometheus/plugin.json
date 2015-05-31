@@ -9,8 +9,10 @@
 
   "partials": {
     "config": "app/plugins/datasource/prometheus/partials/config.html",
-    "query": "app/plugins/datasource/prometheus/partials/query.editor.html"
+    "query": "app/plugins/datasource/prometheus/partials/query.editor.html",
+    "annotations": "app/plugins/datasource/prometheus/partials/annotations.editor.html"
   },
 
-  "metrics": true
+  "metrics": true,
+  "annotations": true
 }

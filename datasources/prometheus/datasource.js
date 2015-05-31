@@ -159,6 +159,39 @@ function (angular, _, kbn) {
         }
     };
 
+    PrometheusDatasource.prototype.annotationQuery = function(annotation, rangeUnparsed) {
+    //  var range = {};
+    //  var timeField = annotation.timeField || '@timestamp';
+    //  var queryString = annotation.query || '*';
+    //  var tagsField = annotation.tagsField || 'tags';
+    //  var titleField = annotation.titleField || 'desc';
+    //  var textField = annotation.textField || null;
+
+    //  range[timeField]= {
+    //    from: rangeUnparsed.from,
+    //    to: rangeUnparsed.to,
+    //  };
+
+    //  var queryInterpolated = templateSrv.replace(queryString);
+
+    //  return this._request('POST', '/_search', annotation.index, data).then(function(results) {
+    //    var list = [];
+
+    //    for (var i = 0; i < hits.length; i++) {
+    //      var event = {
+    //        annotation: annotation,
+    //        time: moment.utc(time).valueOf(),
+    //        title: getFieldFromSource(source, titleField),
+    //        tags: getFieldFromSource(source, tagsField),
+    //        text: getFieldFromSource(source, textField)
+    //      };
+
+    //      list.push(event);
+    //    }
+    //    return list;
+    //  });
+    };
+
     PrometheusDatasource.prototype.calculateInterval = function(interval, intervalFactor) {
       var sec = kbn.interval_to_seconds(interval);
 
