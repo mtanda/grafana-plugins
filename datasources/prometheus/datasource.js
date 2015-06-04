@@ -139,7 +139,7 @@ function (angular, _, kbn) {
                 };
               })
               .value();
-            });
+          });
       } else {
         // if query contains full metric name, return metric name and label list
         options = {
@@ -156,7 +156,7 @@ function (angular, _, kbn) {
               };
             });
           });
-        }
+      }
     };
 
     PrometheusDatasource.prototype.calculateInterval = function(interval, intervalFactor) {
