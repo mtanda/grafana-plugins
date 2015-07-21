@@ -14,6 +14,7 @@ function (angular, _, kbn) {
 
     function PrometheusDatasource(datasource) {
       this.type = 'prometheus';
+      this.version = datasource.jsonData.version;
       this.editorSrc = 'app/features/prometheus/partials/query.editor.html';
       this.name = datasource.name;
       this.supportMetrics = true;
@@ -71,7 +72,8 @@ function (angular, _, kbn) {
             }
             delete self.lastErrors.query;
 
-            _.each(response.data.value, function(metricData) {
+            var resultData = (self.version === 'v1') ? response.data.data.result : response.data.value;
+            _.each(resultData, function(metricData) {
               result.push(transformMetricData(metricData, options.targets[index]));
             });
           });
@@ -81,32 +83,41 @@ function (angular, _, kbn) {
     };
 
     PrometheusDatasource.prototype.performTimeSeriesQuery = function(query, range, end) {
-      var url = this.url + '/api/query_range?expr=' + encodeURIComponent(query.expr) + '&range=' + range + '&end=' + end;
-
       var step = query.step;
       // Prometheus drop query if range/step > 11000
       // calibrate step if it is too big
       if (step !== 0 && range / step > 11000) {
         step = Math.floor(range / 11000);
       }
-      url += '&step=' + step;
+
+      var queryString;
+      if (this.version === 'v1') {
+        queryString = '/api/v1/query_range?query=' + encodeURIComponent(query.expr);
+        queryString += '&start=' + (end - range) + '&end=' + end + '&step=' + step;
+      } else {
+        queryString = '/api/query_range?expr=' + encodeURIComponent(query.expr);
+        queryString += '&range=' + range + '&end=' + end + '&step=' + step;
+      }
 
       var options = {
         method: 'GET',
-        url: url,
+        url: this.url + queryString,
       };
 
       return $http(options);
     };
 
     PrometheusDatasource.prototype.performSuggestQuery = function(query) {
+      var queryString = (this.version === 'v1') ? '/api/v1/label/__name__/values' : '/api/metrics';
       var options = {
         method: 'GET',
-        url: this.url + '/api/metrics',
+        url: this.url + queryString,
       };
 
+      var self = this;
       return $http(options).then(function(result) {
-        var suggestData = _.filter(result.data, function(metricName) {
+        var resultData = (self.version === 'v1') ? result.data.data : result.data;
+        var suggestData = _.filter(resultData, function(metricName) {
           return metricName.indexOf(query) !==  1;
         });
 
@@ -118,16 +129,19 @@ function (angular, _, kbn) {
       var options;
       var matches = query.match(/^[a-zA-Z_:*][a-zA-Z0-9_:*]*/);
 
+      var self = this;
       if (matches != null && matches[0].indexOf('*') >= 0) {
         // if query has wildcard character, return metric name list
+        var queryString = (self.version === 'v1') ? '/api/v1/label/__name__/values' : '/api/metrics';
         options = {
           method: 'GET',
-          url: this.url + '/api/metrics',
+          url: this.url + queryString,
         };
 
         return $http(options)
           .then(function(result) {
-            return _.chain(result.data)
+            var resultData = (self.version === 'v1') ? result.data.data : result.data;
+            return _.chain(resultData)
               .filter(function(metricName) {
                 var r = new RegExp(matches[0].replace(/\*/g, '.*'));
                 return r.test(metricName);
