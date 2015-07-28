@@ -10,11 +10,11 @@ function (angular, _, kbn) {
 
   var module = angular.module('grafana.services');
 
-  module.factory('PrometheusDatasource', function($q, $http, templateSrv) {
+  module.factory('CloudWatchDatasource', function($q, $http, templateSrv) {
 
-    function PrometheusDatasource(datasource) {
-      this.type = 'prometheus';
-      this.editorSrc = 'app/features/prometheus/partials/query.editor.html';
+    function CloudWatchDatasource(datasource) {
+      this.type = 'cloudwatch';
+      this.editorSrc = 'app/features/cloudwatch/partials/query.editor.html';
       this.name = datasource.name;
       this.supportMetrics = true;
 
@@ -28,9 +28,9 @@ function (angular, _, kbn) {
     }
 
     // Called once per panel (graph)
-    PrometheusDatasource.prototype.query = function(options) {
-      var start = convertToPrometheusTime(options.range.from);
-      var end = convertToPrometheusTime(options.range.to);
+    CloudWatchDatasource.prototype.query = function(options) {
+      var start = convertToCloudWatchTime(options.range.from);
+      var end = convertToCloudWatchTime(options.range.to);
 
       var queries = [];
       _.each(options.targets, _.bind(function(target) {
@@ -80,12 +80,12 @@ function (angular, _, kbn) {
         });
     };
 
-    PrometheusDatasource.prototype.performTimeSeriesQuery = function(query, start, end) {
+    CloudWatchDatasource.prototype.performTimeSeriesQuery = function(query, start, end) {
       var url = this.url + '/api/v1/query_range?query=' + encodeURIComponent(query.expr) + '&start=' + start + '&end=' + end;
 
       var step = query.step;
       var range = Math.floor(end - start)
-      // Prometheus drop query if range/step > 11000
+      // CloudWatch drop query if range/step > 11000
       // calibrate step if it is too big
       if (step !== 0 && range / step > 11000) {
         step = Math.floor(range / 11000);
@@ -100,7 +100,7 @@ function (angular, _, kbn) {
       return $http(options);
     };
 
-    PrometheusDatasource.prototype.performSuggestQuery = function(query) {
+    CloudWatchDatasource.prototype.performSuggestQuery = function(query) {
       var options = {
         method: 'GET',
         url: this.url + '/api/v1/label/__name__/values',
@@ -115,7 +115,7 @@ function (angular, _, kbn) {
       });
     };
 
-    PrometheusDatasource.prototype.metricFindQuery = function(query) {
+    CloudWatchDatasource.prototype.metricFindQuery = function(query) {
       var options;
 
       var metricsQuery = query.match(/^[a-zA-Z_:*][a-zA-Z0-9_:*]*/);
@@ -174,7 +174,7 @@ function (angular, _, kbn) {
         }
     };
 
-    PrometheusDatasource.prototype.calculateInterval = function(interval, intervalFactor) {
+    CloudWatchDatasource.prototype.calculateInterval = function(interval, intervalFactor) {
       var sec = kbn.interval_to_seconds(interval);
 
       if (sec < 1) {
@@ -224,12 +224,12 @@ function (angular, _, kbn) {
       return metricName + '{' + labelPart + '}';
     }
 
-    function convertToPrometheusTime(date) {
+    function convertToCloudWatchTime(date) {
       date = kbn.parseDate(date);
       return date.getTime() / 1000;
     }
 
-    return PrometheusDatasource;
+    return CloudWatchDatasource;
   });
 
 });

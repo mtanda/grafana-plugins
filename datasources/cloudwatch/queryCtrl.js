@@ -8,7 +8,7 @@ function (angular, _, kbn) {
 
   var module = angular.module('grafana.controllers');
 
-  module.controller('PrometheusQueryCtrl', function($scope) {
+  module.controller('CloudWatchQueryCtrl', function($scope) {
 
     $scope.init = function() {
       $scope.target.errors = validateTarget();
@@ -38,7 +38,7 @@ function (angular, _, kbn) {
       $scope.$on('render', function() {
         $scope.calculateInterval(); // re-calculate interval when time range is updated
       });
-      $scope.target.prometheusLink = $scope.linkToPrometheus();
+      $scope.target.cloudwatchLink = $scope.linkToCloudWatch();
 
       $scope.$on('typeahead-updated', function() {
         $scope.$apply($scope.inputMetric);
@@ -54,7 +54,7 @@ function (angular, _, kbn) {
     $scope.refreshMetricData = function() {
       $scope.target.errors = validateTarget($scope.target);
       $scope.calculateInterval();
-      $scope.target.prometheusLink = $scope.linkToPrometheus();
+      $scope.target.cloudwatchLink = $scope.linkToCloudWatch();
 
       // this does not work so good
       if (!_.isEqual($scope.oldTarget, $scope.target) && _.isEmpty($scope.target.errors)) {
@@ -83,7 +83,7 @@ function (angular, _, kbn) {
         .then(callback);
     };
 
-    $scope.linkToPrometheus = function() {
+    $scope.linkToCloudWatch = function() {
       var from = kbn.parseDate($scope.dashboard.time.from);
       var to = kbn.parseDate($scope.dashboard.time.to);
 

@@ -1,15 +1,15 @@
 {
   "pluginType": "datasource",
-  "name": "Prometheus",
+  "name": "CloudWatch",
 
-  "type": "prometheus",
-  "serviceName": "PrometheusDatasource",
+  "type": "cloudwatch",
+  "serviceName": "CloudWatchDatasource",
 
-  "module": "plugins/datasource/prometheus/datasource",
+  "module": "plugins/datasource/cloudwatch/datasource",
 
   "partials": {
-    "config": "app/plugins/datasource/prometheus/partials/config.html",
-    "query": "app/plugins/datasource/prometheus/partials/query.editor.html"
+    "config": "app/plugins/datasource/cloudwatch/partials/config.html",
+    "query": "app/plugins/datasource/cloudwatch/partials/query.editor.html"
   },
 
   "metrics": true
