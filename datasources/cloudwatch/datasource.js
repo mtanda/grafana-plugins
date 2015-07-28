@@ -87,7 +87,7 @@ function (angular, _, kbn, AWS) {
       var url = this.url + '/api/v1/query_range?query=' + encodeURIComponent(query.expr) + '&start=' + start + '&end=' + end;
 
       var step = query.step;
-      var range = Math.floor(end - start)
+      var range = Math.floor(end - start);
       // CloudWatch drop query if range/step > 11000
       // calibrate step if it is too big
       if (step !== 0 && range / step > 11000) {
