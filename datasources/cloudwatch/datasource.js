@@ -2,10 +2,11 @@ define([
   'angular',
   'lodash',
   'kbn',
+  './aws-sdk',
   'moment',
   './queryCtrl',
 ],
-function (angular, _, kbn) {
+function (angular, _, kbn, AWS) {
   'use strict';
 
   var module = angular.module('grafana.services');
@@ -81,6 +82,8 @@ function (angular, _, kbn) {
     };
 
     CloudWatchDatasource.prototype.performTimeSeriesQuery = function(query, start, end) {
+      var cloudwatch = new AWS.CloudWatch();
+      cloudwatch.listMetrics({}, function() {});
       var url = this.url + '/api/v1/query_range?query=' + encodeURIComponent(query.expr) + '&start=' + start + '&end=' + end;
 
       var step = query.step;
