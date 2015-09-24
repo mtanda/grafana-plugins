@@ -5,7 +5,7 @@
   "type": "prometheus",
   "serviceName": "PrometheusDatasource",
 
-  "module": "plugins/datasource/prometheus/datasource",
+  "module": "app/plugins/datasource/prometheus/datasource",
 
   "partials": {
     "config": "app/plugins/datasource/prometheus/partials/config.html"
