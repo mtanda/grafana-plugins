@@ -1,9 +1,10 @@
 define([
   'angular',
   'lodash',
+  'app/core/utils/datemath',
   'kbn',
 ],
-function (angular, _, kbn) {
+function (angular, _, dateMath, kbn) {
   'use strict';
 
   var module = angular.module('grafana.controllers');
@@ -79,18 +80,18 @@ function (angular, _, kbn) {
     };
 
     $scope.linkToPrometheus = function() {
-      var from = kbn.parseDate($scope.dashboard.time.from);
-      var to = kbn.parseDate($scope.dashboard.time.to);
+      var from = dateMath.parse($scope.dashboard.time.from);
+      var to = dateMath.parse($scope.dashboard.time.to);
 
       if ($scope.panel.timeFrom) {
-        from = kbn.parseDateMath('-' + $scope.panel.timeFrom, to);
+        from = dateMath.parseMath('-' + $scope.panel.timeFrom, to);
       }
       if ($scope.panel.timeShift) {
-        from = kbn.parseDateMath('-' + $scope.panel.timeShift, from);
-        to = kbn.parseDateMath('-' + $scope.panel.timeShift, to);
+        from = dateMath.parseMath('-' + $scope.panel.timeShift, from);
+        to = dateMath.parseMath('-' + $scope.panel.timeShift, to);
       }
 
-      var range = Math.ceil((to.getTime() - from.getTime()) / 1000);
+      var range = Math.ceil((to - from) / 1000);
 
       var d = new Date(to);
       var endTime = [d.getFullYear(), d.getMonth() + 1, d.getDate()].join('-') + ' ' + d.getUTCHours() + ':' + d.getUTCMinutes();

@@ -1,12 +1,13 @@
 define([
   'angular',
   'lodash',
+  'app/core/utils/datemath',
   'kbn',
   'moment',
   './directives',
   './queryCtrl',
 ],
-function (angular, _, kbn) {
+function (angular, _, dateMath, kbn) {
   'use strict';
 
   var module = angular.module('grafana.services');
@@ -47,8 +48,8 @@ function (angular, _, kbn) {
 
     // Called once per panel (graph)
     PrometheusDatasource.prototype.query = function(options) {
-      var start = convertToPrometheusTime(options.range.from);
-      var end = convertToPrometheusTime(options.range.to);
+      var start = convertToPrometheusTime(options.rangeRaw.from);
+      var end = convertToPrometheusTime(options.rangeRaw.to);
 
       var queries = [];
       _.each(options.targets, _.bind(function(target) {
@@ -237,8 +238,8 @@ function (angular, _, kbn) {
     }
 
     function convertToPrometheusTime(date) {
-      date = kbn.parseDate(date);
-      return date.getTime() / 1000;
+      date = dateMath.parse(date);
+      return date / 1000;
     }
 
     return PrometheusDatasource;
